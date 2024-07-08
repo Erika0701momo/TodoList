@@ -81,7 +81,7 @@ class SearchForm(FlaskForm):
     search = StringField()
     submit = SubmitField("検索")
 
-#デコレータ
+#デコレータ　ログインしていなかったらログイン画面へ遷移
 def goto_login(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -106,6 +106,7 @@ def custom_error(e):
 
     return render_template("error.html", code=code, name=name, description=description), code
 
+# エラーコードをurlに打ち込むとそのエラーページを表示
 @app.get("/<int:code>")
 def error_page(code):
     if code not in [k for k in default_exceptions.keys()]:
@@ -115,13 +116,18 @@ def error_page(code):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
+
+    #　新規登録ボタンが押されたら新規登録画面へ遷移
     if form.submit_register.data:
         return redirect(url_for('register'))
+
+    # ログイン処理
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
         result = db.session.execute(db.select(User).where(User.email == email))
         user = result.scalar()
+
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for("get_tasks"))
@@ -131,19 +137,24 @@ def login():
         elif not check_password_hash(user.password, password):
             flash("パスワードが違います。")
             return redirect(url_for("login"))
+
     return render_template("login.html", form=form, current_user=current_user)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
     title = "ユーザー登録"
+
+    # 新規登録処理
     if form.validate_on_submit():
         result = db.session.execute(db.select(User).where(User.email == form.email.data))
         user = result.scalar()
+
         if user:
             flash("既にそのメールアドレスで登録されています。ログインしてください。")
             return redirect(url_for("login"))
 
+        # パスワード暗号化
         hash_and_salted_password = generate_password_hash(
             form.password.data,
             method="pbkdf2:sha256",
@@ -154,10 +165,15 @@ def register():
             password = hash_and_salted_password,
             name = form.name.data
         )
+
+        # ユーザー登録
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
+
+        # タスク一覧画面へ
         return redirect(url_for("get_tasks"))
+
     return render_template("register.html", form=form, current_user=current_user, title=title)
 
 @app.route("/", methods=["GET", "POST"])
@@ -165,10 +181,13 @@ def register():
 def get_tasks():
     form = SearchForm()
     today = datetime.date.today()
+
+    # POSTなら検索処理
     if request.method == "POST":
         search_word = form.search.data
         result = db.session.execute(db.select(Task).join(Task.user).where(or_(User.name.contains(search_word), (Task.task_name.contains(search_word)))).order_by(Task.due_date))
         tasks = result.scalars().all()
+
         if tasks:
             title = "検索結果"
             today = datetime.date.today()
@@ -176,6 +195,8 @@ def get_tasks():
         else:
             flash("検索結果がありません。", "category1")
             return redirect(url_for("get_tasks"))
+
+    # リクエストパラメータあったら完了済みタスク一覧を表示
     else:
         id = request.args.get("id")
         if id == "done":
@@ -184,6 +205,7 @@ def get_tasks():
             result = db.session.execute(db.select(Task).where(Task.is_done == 1).order_by(Task.due_date))
             tasks = result.scalars().all()
             return render_template("index.html", current_user=current_user, tasks=tasks, title=title, form=form, today=today, is_done=is_done)
+        # タスク一覧表示
         else:
             result = db.session.execute(db.select(Task).where(Task.is_done == 0).order_by(Task.due_date))
             tasks = result.scalars().all()
@@ -196,8 +218,12 @@ def create_task():
     form = CreateTaskForm()
     form.charge.choices = [(r.id, r.name) for r in User.query.all()]
     title = "タスク登録"
+
+    # キャンセルボタン押したらタスク一覧画面へ
     if form.cancel.data:
         return redirect(url_for("get_tasks"))
+
+    # タスク登録
     if form.validate_on_submit():
         new_task = Task(
             user_id=form.charge.data,
@@ -209,7 +235,9 @@ def create_task():
         db.session.add(new_task)
         db.session.commit()
         flash(f"タスク「{new_task.task_name}」を登録しました。", "category2")
+
         return redirect(url_for("get_tasks"))
+
     return render_template("task.html", form=form, title=title, current_user=current_user)
 
 @app.route("/edit/<int:task_id>", methods=["GET", "POST"])
@@ -218,6 +246,8 @@ def edit_task(task_id):
     title = "タスク更新"
     task = db.get_or_404(Task, task_id)
     form = CreateTaskForm()
+
+    # タスク更新画面表示
     if request.method == "GET":
         form.charge.choices = [(r.id, r.name) for r in User.query.all()]
         form.charge.default = task.user_id
@@ -225,38 +255,51 @@ def edit_task(task_id):
         form.due_date.default = task.due_date
         form.is_done.default = task.is_done
         form.process()
+
         return render_template("task.html", current_user=current_user, form=form, title=title, task=task)
     else:
         form.charge.choices = [(r.id, r.name) for r in User.query.all()]
+
+        # キャンセルボタン押したらタスク一覧画面へ
         if form.cancel.data:
             return redirect(url_for("get_tasks"))
+
+        # タスク更新
         if form.validate_on_submit():
             task.user_id = form.charge.data
             task.task_name = form.task_name.data
             task.due_date = form.due_date.data
             task.is_done = form.is_done.data
+
             db.session.commit()
+
             flash(f"タスク「{task.task_name}」を更新しました。", "category2")
+
             return redirect(url_for("get_tasks"))
 
 @app.route("/delete/<int:task_id>", methods=["GET", "POST"])
 @goto_login
 def delete_task(task_id):
     task_to_delete = db.get_or_404(Task, task_id)
+
+    # タスク削除画面表示
     if request.method == "GET":
        return render_template("delete.html", task=task_to_delete, current_user=current_user)
     else:
+        # タスク削除
         if "delete" in request.form:
             db.session.delete(task_to_delete)
             db.session.commit()
             flash(f"タスク「{task_to_delete.task_name}」を削除しました。", "category2")
             return redirect(url_for("get_tasks"))
+        # キャンセルボタン押したらタスク一覧画面へ
         elif "cancel" in request.form:
             return redirect(url_for("get_tasks"))
 
 @app.route("/complete/<int:task_id>")
 @goto_login
 def complete_task(task_id):
+    # タスクを完了にする
     task = db.get_or_404(Task, task_id)
     task.is_done = True
     db.session.commit()

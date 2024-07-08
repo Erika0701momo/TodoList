@@ -21,6 +21,7 @@
             </form>
         </div>
     </div>
+    <!--フラッシュメッセージ-->
     {% with messages = get_flashed_messages(category_filter=["category1"]) %}
             {% if messages: %}
             {% for message in messages: %}
@@ -36,7 +37,7 @@
             {% endif %}
             {% endwith %}
     <div class="container">
-
+        <!--タスクをテーブル表示-->
         <table class="table table-bordered">
             <thead>
                 <tr class="text-center table-primary">
