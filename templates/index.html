@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}タスク一覧{% endblock %}
+    {% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    {% endblock %}
+    {% block display %}{{ title }}{% endblock %}
+    {% block content %}
+    {% from "formhelpers.html" import render_field %}
+    <div class="registerSearch">
+        <div class="buttons">
+            <button type="button" class="btn btn-primary btn-md" onclick="location.href='{{ url_for('create_task') }}';">タスク登録</button>
+            <button type="button" class="btn btn-primary btn-md" onclick="location.href='{{ url_for('get_tasks', id='done') }}';">完了済みタスク一覧</button>
+        </div>
+        <div class="search">
+            {% from "formhelpers.html" import render_field %}
+            <form method="POST" action="{{ url_for('get_tasks') }}" class="search" novalidate>
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+            {{ render_field(form.search, class="searchbox") }}
+            {{ render_field(form.submit, class="btn btn-primary btn-sm") }}
+            </form>
+        </div>
+    </div>
+    {% with messages = get_flashed_messages(category_filter=["category1"]) %}
+            {% if messages: %}
+            {% for message in messages: %}
+            <p class="flash1">{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {% with messages = get_flashed_messages(category_filter=["category2"]) %}
+            {% if messages: %}
+            {% for message in messages: %}
+            <p class="flash2">{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+    <div class="container">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr class="text-center table-primary">
+                    <th style="width: 20%">タスク名</th>
+                    <th style="width: 20%">担当者</th>
+                    <th style="width: 20%">登録日</th>
+                    <th style="width: 20%">期限日</th>
+                    <th style="width: 20%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks: %}
+                {% if task.is_done == 1: %}
+                {% set bg = "table-secondary" %}
+                {% elif today > task.due_date: %}
+                {% set bg = "table-danger" %}
+                {% endif %}
+                <tr class="text-center {{ bg }}" >
+                    <td>{{ task.task_name }}</td>
+                    <td>{{ task.user.name }}</td>
+                    <td>{{ task.registration_date }}</td>
+                    <td>{{ task.due_date }}</td>
+                    <td>
+                        {% if not is_done: %}
+                        <button type="button" class="btn btn-success btn-sm" onclick="location.href='{{ url_for('complete_task', task_id=task.id) }}';">完了</button>
+                        {% endif %}
+                        <button type="button" class="btn btn-primary btn-sm" onclick="location.href='{{ url_for('edit_task', task_id=task.id) }}';">更新</button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="location.href='{{ url_for('delete_task', task_id=task.id) }}';">削除</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

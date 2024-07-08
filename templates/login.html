@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ログイン</title>
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loginRegister.css') }}">
+</head>
+<body>
+    <div class="jumbotron">
+        <div class="container">
+        <h1 class="display-4">Simple TodoList</h1>
+            {% with messages = get_flashed_messages() %}
+            {% if messages: %}
+            {% for message in messages: %}
+            <p class="flash">{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {% from "formhelpers.html" import render_field %}
+            <form method="POST" action="{{ url_for('login') }}" novalidate>
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+                <div class="mb-3 required">
+                    <label class=form-label for="email">メールアドレス</label>
+                    {{ render_field(form.email, class="form-control") }}
+                </div>
+                <div class="mb-3 required">
+                    <label class="form-label" for="password">パスワード</label>
+                    {{ render_field(form.password, class="form-control") }}
+                </div>
+                <div class="buttons">
+                    {{ render_field(form.submit_login, class="btn btn-primary btn-md") }}
+                    {{ render_field(form.submit_register, class="btn btn-primary btn-md") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

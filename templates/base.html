@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %}</title>
+    {{ bootstrap.load_css() }}
+    <!--参照するcssの記載-->
+    {% block styles %}
+    {% endblock %}
+</head>
+<body>
+    <div class="header">
+        <h1 class="display-4">{% block display %}{% endblock %}</h1>
+        <div class="navigation">
+            <p>ようこそ{{ current_user.name }}さん</p>
+            <button type="button" class="btn btn-secondary btn-md" onclick="location.href='{{ url_for('logout') }}';">ログアウト</button>
+        </div>
+    </div>
+    <hr>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}タスク削除{% endblock %}
+    {% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/task.css') }}">
+    {% endblock %}
+    {% block display %}タスク削除{% endblock %}
+    {% block content %}
+        <div class="col-md-6">
+            <p class="notify">以下のタスクを削除します。よろしいですか？</p>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td class="table-info text-center align-middle">タスク名</td>
+                    <td>{{ task.task_name }}</td>
+                </tr>
+                <tr>
+                    <td class="table-info text-center align-middle">担当者</td>
+                    <td>{{ task.user.name }}</td>
+                </tr>
+                <tr>
+                    <td class="table-info text-center align-middle">期限日</td>
+                    <td>{{ task.due_date }}</td>
+                </tr>
+                <tr>
+                    <td class="table-info text-center align-middle">完了</td>
+                    {% if task.is_done == True: %}
+                    <td>完了</td>
+                    {% else: %}
+                    <td>未完了</td>
+                    {% endif %}
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="buttons">
+            <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST">
+            <button type="submit" class="btn btn-danger btn-md" name="delete" value="Delete">削除</button>
+            <button type="submit" class="btn btn-primary btn-md" name="cancel" value="Cancel">キャンセル</button>
+            </form>
+        </div>
+{% endblock %}

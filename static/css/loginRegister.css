@@ -1,0 +1,21 @@
+.jumbotron {
+    width: 400px;
+    align-items: center;
+    display: flex;
+    margin: 0 auto;
+}
+.btn {
+    width: 150px;
+    margin-top: 20px;
+}
+.buttons {
+    text-align: center;
+}
+h1 {
+    margin-bottom: 30px;
+    text-align: center;
+}
+.flash {
+  color: #ee6f57;
+  text-align: center;
+}

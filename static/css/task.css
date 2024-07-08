@@ -1,0 +1,42 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 0px;
+}
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+.navigation button {
+    margin-left: 20px;
+}
+.navigation p {
+    padding-top: 15px;
+}
+hr {
+    border-top: 3px solid;
+}
+.checkbox {
+    transform: scale(1.5);
+}
+table {
+    margin-left: 20px;
+}
+.buttons .btn {
+    width: 150px;
+    height: 40px;
+    margin: 20px 10px;
+}
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.notify {
+    color:red;
+    padding-left:20px;
+}

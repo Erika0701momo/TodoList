@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>エラー</title>
+    {{ bootstrap.load_css() }}
+    <!--参照するcssの記載-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/error.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1 class="display-4">{{ code }} {{ name }}</h1>
+        <div class="navigation">
+            <p>ようこそ{{ current_user.name }}さん</p>
+        </div>
+    </div>
+    <hr>
+    <p class="err_message">申し訳ございません。エラーが発生しました。</p>
+    <p class="description">{{ description }}</p>
+    <button type="button" class="btn btn-secondary btn-md" onclick="location.href='{{ url_for('logout') }}';">ログアウト</button>
+</body>
+</html>

@@ -1,0 +1,35 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 0px;
+}
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+.navigation p {
+    padding-top: 15px;
+}
+hr {
+    border-top: 3px solid;
+}
+.btn {
+    width: 150px;
+    height: 40px;
+    display: block;
+    margin: auto;
+}
+.err_message {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 50px;
+}
+.description {
+    text-align: center;
+    margin-bottom: 30px;
+}

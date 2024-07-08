@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+    {% block title %}{{ title }}{% endblock %}
+    {% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/task.css') }}">
+    {% endblock %}
+    {% block display %}{{ title }}{% endblock %}
+    {% block content %}
+    {% from "formhelpers.html" import render_field %}
+    {% if title == "タスク更新": %}
+    <form action="{{ url_for('edit_task', task_id=task.id) }}" method="post" novalidate>
+        {% else: %}
+        <form action="{{ url_for('create_task') }}" method="post" novalidate>
+            {% endif %}
+        <div class="col-md-6">
+        {{ form.csrf_token }}
+        {{ form.hidden_tag() }}
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td class="table-info text-center align-middle">タスク名</td>
+                    <td>{{ render_field(form.task_name, class="form-control") }}</td>
+                </tr>
+                <tr>
+                    <td class="table-info text-center align-middle">担当者</td>
+                    <td>{{ render_field(form.charge, class="form-select") }}</td>
+                </tr>
+                <tr>
+                    <td class="table-info text-center align-middle">期限日</td>
+                    <td>{{ render_field(form.due_date, class="form-control") }}</td>
+                </tr>
+                <tr>
+                    <td class="table-info text-center align-middle">完了</td>
+                    <td>{{ render_field(form.is_done, class="checkbox align-middle ms-1") }}</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="buttons">
+            {{ render_field(form.submit, class="btn btn-primary btn-md") }}
+            {{ render_field(form.cancel, class="btn btn-primary btn-md") }}
+        </div>
+    </form>
+        {% endblock %}
