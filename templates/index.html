@@ -10,6 +10,9 @@
         <div class="buttons">
             <button type="button" class="btn btn-primary btn-md" onclick="location.href='{{ url_for('create_task') }}';">タスク登録</button>
             <button type="button" class="btn btn-primary btn-md" onclick="location.href='{{ url_for('get_tasks', id='done') }}';">完了済みタスク一覧</button>
+            {% if title == "検索結果" or title == "完了済みタスク一覧": %}
+            <button type="button" class="btn btn-primary btn-md" onclick="location.href='{{ url_for('get_tasks') }}';">未完了タスク一覧</button>
+            {% endif %}
         </div>
         <div class="search">
             {% from "formhelpers.html" import render_field %}

@@ -209,7 +209,7 @@ def get_tasks():
         else:
             result = db.session.execute(db.select(Task).where(Task.is_done == 0).order_by(Task.due_date))
             tasks = result.scalars().all()
-            title = "タスク一覧"
+            title = "未完了タスク一覧"
             return render_template("index.html", current_user=current_user, form=form, tasks=tasks, today=today, title=title)
 
 @app.route("/create", methods=["GET", "POST"])
