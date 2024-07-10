@@ -15,7 +15,7 @@ from werkzeug.exceptions import HTTPException, default_exceptions
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "73f5e7ae413742c3856abd2e16580293"
+app.config["SECRET_KEY"] = "secret key"
 Bootstrap5(app)
 
 class Base(DeclarativeBase):
